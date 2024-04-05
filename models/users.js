@@ -10,10 +10,7 @@ const userSchema = new Schema({
     PhoneNumber:{ type: String, required: true},
     email:{ type: String, required: true, unique: true},
     password:{ type: String, required: true ,minlength: 8}, 
-    cars: [{latitude: {type: Number,required: true },
-      longitude: {type: Number,required: true},
-      timestamp: {type: Date,default: Date.now}
-      }]
+   
 })
 
 // Modèle pour les utilisateurs
