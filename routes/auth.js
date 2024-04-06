@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 const user = require('../models/users'); 
 const bcrypt = require('bcrypt'); 
-const jwt = require('jsonwebtoken');
 
 
 
@@ -74,45 +73,5 @@ try {
 
 
 
-
-// Route de login
-router.post('/login', async (req, res) => {
-  try {
-    const { email, password } = req.body; 
-
-
-    // Check for missing fields
-    if (!email || !password) {
-      return res.status(400).send({ message: 'Missing required fields' });
-    }
-
-    // Find user by email
-    const existingUser = await user.findOne({ email });
-    if (!existingUser) {
-      return res.status(401).send({ message: 'Invalid email or password' });
-    }
-
-    // Compare password using bcrypt (assuming User model has comparePassword)
-    const isMatch = await bcrypt.compare(password , existingUser.password);
-    if (!isMatch) {
-      return res.status(401).send({ message: 'Invalid email or password' });
-    }
-
-    // Login successful, generate JWT token
-    const userId = existingUser._id; // Assuming User model has an ID field
-    const secret = 'your_secret_key'; // Replace with a strong secret key
-    const expiresIn = 60 * 60; // Token expires in 1 hour
-
-    const token = jwt.sign({ userId }, secret, { expiresIn });
-
-    // Send response with token
-    res.status(200).send({ message: 'Login successful', token });
-
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ message: 'Login error' });
-  }
-});
 
 module.exports = router;

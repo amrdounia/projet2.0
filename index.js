@@ -1,7 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
-const SerialPort = require('serialport');
+const serialport = require('serialport');
+const port = new serialport('/dev/ttyACM0', { baudRate: 9600 });
+const router = require('./routes/tracker');
+const trackerData = require('./models/trackerData');
+
 
 
 mongoose
@@ -22,6 +26,20 @@ app.use(express.json());
 
 // Utilisation des routes
 app.use('/api/auth', authRoutes);
+
+app.use('/api/tracker', router);
+
+port.on('data', async (data) => {
+  try {
+    const positionData = JSON.parse(data.toString());
+    const newPosition = new trackerData(positionData);
+    await newPosition.save();
+  } catch (error) {
+    console.error('Erreur de traitement des données série :', error);
+  }
+});
+
+
 
 app.listen(3000, () => {
   console.log(`Serveur lancé sur le port 3000`);
