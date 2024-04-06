@@ -1,8 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
-const serialport = require('serialport');
-const port = new serialport('/dev/ttyACM0', { baudRate: 9600 });
 const router = require('./routes/tracker');
 const trackerData = require('./models/trackerData');
 

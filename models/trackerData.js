@@ -6,6 +6,7 @@ const trackerDataSchema = new Schema({
     timestamp: Date,
     latitude: Number,
     longitude: Number,
+    
 });
 
 const TrackerData = mongoose.model('TrackerData', trackerDataSchema);

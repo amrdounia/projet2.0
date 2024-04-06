@@ -1,28 +1,39 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const TrackerData = require('../models/trackerData');
+const User = require("../models/users");
 
-router.route('/positions')
-  .post(async (req, res) => {
-    try {
-      const positionData = req.body; // En supposant des données JSON provenant d'Arduino
-      const newPosition = new TrackerData(positionData);
-      await newPosition.save();
-      res.status(201).send({ message: 'Données de position enregistrées avec succès' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send({ message: 'Erreur lors de l enregistrement des données de position' });
-    }
-  })
-  .get(async (req, res) => {
-    try {
-      const positions = await TrackerData.find(); // Filtrer si besoin
-      res.status(200).send(positions);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send({ message: 'Erreur lors de la récupération des données de position' });
-    }
-  });
+// Route pour recevoir les données de position
+router.post("/position", async (req, res) => {
+  const { latitude, longitude } = req.body;
+  const user = await User.findById(req.userId);
 
-  
-  module.exports = router;
+  // Mettre à jour la position du véhicule de l'utilisateur
+  user.CarPosition = { latitude, longitude };
+  await user.save();
+
+  res.send({ success: true });
+});
+
+module.exports = router;
+
+const SerialPort = require("serialport");
+
+const port = new SerialPort("/dev/ttyUSB0", {
+  baudRate: 9600,
+});
+
+port.on("open", () => {
+  console.log("Port série ouvert");
+});
+
+port.on("data", (data) => {
+  const positionData = JSON.parse(data.toString());
+  // Envoyer les données de position au serveur
+  axios.post("/api/position", positionData);
+});
+
+router.get("/position", async (req, res) => {
+  const user = await User.findById(req.userId);
+
+  res.send({ position: user.CarPosition });
+});
