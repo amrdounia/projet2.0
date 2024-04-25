@@ -1,8 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
-const router = require('./routes/tracker');
-const trackerData = require('./models/trackerData');
+const calculdistanceRoutes = require('./routes/calculdistance');
 
 
 
@@ -25,19 +24,8 @@ app.use(express.json());
 // Utilisation des routes
 app.use('/api/auth', authRoutes);
 
-app.use('/api/tracker', router);
-
-port.on('data', async (data) => {
-  try {
-    const positionData = JSON.parse(data.toString());
-    const newPosition = new trackerData(positionData);
-    await newPosition.save();
-  } catch (error) {
-    console.error('Erreur de traitement des données série :', error);
-  }
-});
-
-
+// Utilisation des routes
+app.use('/api/calculdistance', calculdistanceRoutes);
 
 app.listen(3000, () => {
   console.log(`Serveur lancé sur le port 3000`);
