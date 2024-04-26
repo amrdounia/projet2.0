@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
-const calculdistanceRoutes = require('./routes/calculdistance');
+const dataRoutes = require('./routes/data');
 
 
 
@@ -25,7 +25,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 
 // Utilisation des routes
-app.use('/api/calculdistance', calculdistanceRoutes);
+app.use('/api/data', dataRoutes);
 
 app.listen(3000, () => {
   console.log(`Serveur lancé sur le port 3000`);
